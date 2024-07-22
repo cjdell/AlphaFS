@@ -78,7 +78,7 @@ namespace Alphaleonis.Win32.Filesystem
          {
             safeHandle = CreateFileCore(transaction, false, path, attributes, security, mode, rights, share, true, false, pathFormat);
 
-            return new FileStream(safeHandle, access, bufferSize ?? NativeMethods.DefaultFileBufferSize, (attributes & ExtendedFileAttributes.Overlapped) != 0);
+            return new FileStreamAutoClose(safeHandle, access, bufferSize ?? NativeMethods.DefaultFileBufferSize, (attributes & ExtendedFileAttributes.Overlapped) != 0);
          }
          catch
          {
@@ -86,6 +86,27 @@ namespace Alphaleonis.Win32.Filesystem
                safeHandle.Close();
 
             throw;
+         }
+      }
+
+      /// <summary>
+      /// Need to close the file handle after the stream closes because the stream does not create the file handle and therefore won't close it automatically. Windows tolerates this but Wine does not.
+      /// </summary>
+      class FileStreamAutoClose : FileStream
+      {
+         public FileStreamAutoClose(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+            : base(handle, access, bufferSize, isAsync)
+         {
+         }
+
+         protected override void Dispose(bool disposing)
+         {
+            base.Dispose(disposing);
+
+            if (!this.SafeFileHandle.IsClosed)
+            {
+               this.SafeFileHandle.Close();
+            }
          }
       }
    }
