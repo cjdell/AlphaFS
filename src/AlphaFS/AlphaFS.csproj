@@ -695,7 +695,7 @@
     <Compile Include="Filesystem\Exceptions\TransactionException.cs" />
     <Compile Include="Device\Volume\Volume.cs" />
     <Compile Include="Device\Volume\VolumeInfo.cs" />
-    <Compile Include="Security\Native Other\LUID.cs" />
+    <Compile Include="Security\Native Other\Luid.cs" />
     <Compile Include="Security\SecurityAttributes.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Win32Errors.cs" />
